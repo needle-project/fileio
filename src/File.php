@@ -35,7 +35,7 @@ class File
      */
     public function exists(): bool
     {
-        return false;
+        return file_exists($this->filename);
     }
 
     /**
@@ -44,7 +44,7 @@ class File
      */
     public function isReadable(): bool
     {
-        return false;
+        return is_readable($this->filename);
     }
 
     /**
@@ -52,7 +52,7 @@ class File
      */
     public function isWritable(): bool
     {
-        return false;
+        return is_writable($this->filename);
     }
 
     /**
@@ -70,6 +70,6 @@ class File
      */
     public function delete()
     {
-        // do nothing at the moment
+        unlink($this->filename);
     }
 }
