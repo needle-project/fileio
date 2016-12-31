@@ -1,6 +1,8 @@
 <?php
 namespace NeedleProject\FileIo;
 
+use NeedleProject\FileIo\Content\Content;
+
 class FileTest extends \PHPUnit_Framework_TestCase
 {
     /**
@@ -30,6 +32,9 @@ class FileTest extends \PHPUnit_Framework_TestCase
         unlink(static::FIXTURE_PATH . 'readable.file');
         unlink(static::FIXTURE_PATH . 'unreadable.file');
         unlink(static::FIXTURE_PATH . 'unwritable.file');
+        if (file_exists(static::FIXTURE_PATH . 'delete.file')) {
+            unlink(static::FIXTURE_PATH . 'delete.file');
+        }
     }
 
     /**
@@ -96,7 +101,7 @@ class FileTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @param $providedFile
-     * @dataProvider providionFilesToDelete
+     * @dataProvider provideFilesToDelete
      */
     public function testDelete($providedFile)
     {
@@ -104,6 +109,22 @@ class FileTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($file->exists(), sprintf("%s should exists!", $providedFile));
         $file->delete();
         $this->assertFalse($file->exists(), sprintf("%s should be deleted!", $providedFile));
+    }
+
+    /**
+     * @param $providedContent
+     * @dataProvider provideContent
+     */
+    public function testWrite($providedContent)
+    {
+        $filename = static::FIXTURE_PATH . 'file_with_content';
+        touch($filename);
+        $file = new File($filename);
+        $file->write($providedContent);
+
+        $content = file_get_contents($filename);
+        $this->assertEquals($providedContent->get(), $content, "Content written is not equal to the one expected!");
+        unlink($filename);
     }
 
     /**
@@ -161,10 +182,26 @@ class FileTest extends \PHPUnit_Framework_TestCase
         ];
     }
 
-    public function providionFilesToDelete(): array
+    /**
+     * Provide files to be deleted
+     * @return array
+     */
+    public function provideFilesToDelete(): array
     {
         return [
             [static::FIXTURE_PATH . 'delete.file']
+        ];
+    }
+
+    /**
+     * Provide Content
+     * @return array
+     */
+    public function provideContent(): array
+    {
+        return [
+            [new Content('foo')],
+            [new Content('bar')]
         ];
     }
 }

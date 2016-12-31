@@ -7,6 +7,8 @@
  */
 namespace NeedleProject\FileIo;
 
+use NeedleProject\FileIo\Content\ContentInterface;
+
 /**
  * Class File
  *
@@ -57,11 +59,12 @@ class File
 
     /**
      * Write content to the current file
-     * @param mixed $content
+     * @param ContentInterface $content
      * @return \NeedleProject\FileIo\File
      */
-    public function write(/* Content */$content): File
+    public function write(ContentInterface $content): File
     {
+        file_put_contents($this->filename, $content->get());
         return $this;
     }
 
