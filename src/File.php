@@ -8,6 +8,7 @@
 namespace NeedleProject\FileIo;
 
 use NeedleProject\FileIo\Content\ContentInterface;
+use NeedleProject\FileIo\Exception\PermissionDeniedException;
 
 /**
  * Class File
@@ -19,6 +20,9 @@ use NeedleProject\FileIo\Content\ContentInterface;
  */
 class File
 {
+    /**
+     * @var null|string
+     */
     private $filename = null;
 
     /**
@@ -59,11 +63,16 @@ class File
 
     /**
      * Write content to the current file
-     * @param ContentInterface $content
+     *
+     * @param \NeedleProject\FileIo\Content\ContentInterface $content
      * @return \NeedleProject\FileIo\File
+     * @throws \NeedleProject\FileIo\Exception\PermissionDeniedException
      */
     public function write(ContentInterface $content): File
     {
+        if ($this->isWritable() === false) {
+            throw new PermissionDeniedException("The current file is not writable!");
+        }
         file_put_contents($this->filename, $content->get());
         return $this;
     }
@@ -71,8 +80,11 @@ class File
     /**
      * Deletes the current file
      */
-    public function delete()
+    public function delete(): bool
     {
-        unlink($this->filename);
+        if ($this->exists() === false) {
+            return false;
+        }
+        return unlink($this->filename);
     }
 }

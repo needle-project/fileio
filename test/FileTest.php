@@ -103,12 +103,20 @@ class FileTest extends \PHPUnit_Framework_TestCase
      * @param $providedFile
      * @dataProvider provideFilesToDelete
      */
-    public function testDelete($providedFile)
+    public function testDeleteTrue($providedFile)
     {
         $file = new File($providedFile);
-        $this->assertTrue($file->exists(), sprintf("%s should exists!", $providedFile));
-        $file->delete();
-        $this->assertFalse($file->exists(), sprintf("%s should be deleted!", $providedFile));
+        $this->assertTrue($file->delete(), sprintf("%s should be deleted!", $providedFile));
+    }
+
+    /**
+     * @param $providedFile
+     * @dataProvider provisionFakeFiles
+     */
+    public function testDeleteFalse($providedFile)
+    {
+        $file = new File($providedFile);
+        $this->assertFalse($file->delete(), sprintf("%s should not be deleted!", $providedFile));
     }
 
     /**
@@ -125,6 +133,17 @@ class FileTest extends \PHPUnit_Framework_TestCase
         $content = file_get_contents($filename);
         $this->assertEquals($providedContent->get(), $content, "Content written is not equal to the one expected!");
         unlink($filename);
+    }
+
+    /**
+     * @param $providedFile
+     * @dataProvider provisionUnwritableFiles
+     * @expectedException \NeedleProject\FileIo\Exception\PermissionDeniedException
+     */
+    public function testWriteFail($providedFile)
+    {
+        $file = new File($providedFile);
+        $file->write(new Content('foo'));
     }
 
     /**
