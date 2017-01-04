@@ -2,6 +2,7 @@
 namespace NeedleProject\FileIo;
 
 use NeedleProject\FileIo\Content\Content;
+use Symfony\Component\DependencyInjection\Tests\Compiler\F;
 
 class FileTest extends \PHPUnit_Framework_TestCase
 {
@@ -22,6 +23,7 @@ class FileTest extends \PHPUnit_Framework_TestCase
         touch(static::FIXTURE_PATH . 'unwritable.file');
         chmod(static::FIXTURE_PATH . 'unwritable.file', 555);
         touch(static::FIXTURE_PATH . 'delete.file');
+        touch(static::FIXTURE_PATH . 'content.file');
     }
 
     /**
@@ -35,6 +37,7 @@ class FileTest extends \PHPUnit_Framework_TestCase
         if (file_exists(static::FIXTURE_PATH . 'delete.file')) {
             unlink(static::FIXTURE_PATH . 'delete.file');
         }
+        unlink(static::FIXTURE_PATH . 'content.file');
     }
 
     /**
@@ -147,6 +150,41 @@ class FileTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * @param $providedFile
+     * @dataProvider provisionUnreadableFiles
+     * @expectedException \NeedleProject\FileIo\Exception\PermissionDeniedException
+     */
+    public function testGetContentUnreadableFile($providedFile)
+    {
+        $file = new File($providedFile);
+        $file->getContent();
+    }
+
+    /**
+     * @param $providedFile
+     * @dataProvider provisionFakeFiles
+     * @expectedException \NeedleProject\FileIo\Exception\FileNotFoundException
+     */
+    public function testtGetContentNonExistentFile($providedFile)
+    {
+        $file = new File($providedFile);
+        $file->getContent();
+    }
+
+    /**
+     * We will test that we receive the desired content
+     * @dataProvider provideFileAndContent
+     */
+    public function testtGetContentPass($providedFile, $providedContent)
+    {
+        file_put_contents($providedFile, $providedContent);
+
+        $file = new File($providedFile);
+        $content = $file->getContent();
+        $this->assertEquals($providedContent, $content->get(), "The content is not the same!");
+    }
+
+    /**
      * Provide real files useful for test scenarios
      * @return array
      */
@@ -221,6 +259,17 @@ class FileTest extends \PHPUnit_Framework_TestCase
         return [
             [new Content('foo')],
             [new Content('bar')]
+        ];
+    }
+
+    /**
+     * Provide a filename and a content
+     * @return array
+     */
+    public function provideFileAndContent(): array
+    {
+        return [
+            [static::FIXTURE_PATH . 'content.file', 'Lorem ipsum']
         ];
     }
 }

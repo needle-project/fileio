@@ -7,7 +7,9 @@
  */
 namespace NeedleProject\FileIo;
 
+use NeedleProject\FileIo\Content\Content;
 use NeedleProject\FileIo\Content\ContentInterface;
+use NeedleProject\FileIo\Exception\FileNotFoundException;
 use NeedleProject\FileIo\Exception\PermissionDeniedException;
 
 /**
@@ -75,6 +77,24 @@ class File
         }
         file_put_contents($this->filename, $content->get());
         return $this;
+    }
+
+    /**
+     * @return \NeedleProject\FileIo\Content\ContentInterface
+     * @throws \NeedleProject\FileIo\Exception\FileNotFoundException
+     * @throws \NeedleProject\FileIo\Exception\PermissionDeniedException
+     */
+    public function getContent(): ContentInterface
+    {
+        if ($this->exists() === false) {
+            throw new FileNotFoundException(sprintf("%s does not exists!", $this->filename));
+        }
+        if ($this->isReadable() === false) {
+            throw new PermissionDeniedException(
+                sprintf("You do not have permissions to read file %s!", $this->filename)
+            );
+        }
+        return new Content(file_get_contents($this->filename));
     }
 
     /**
