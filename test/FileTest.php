@@ -21,9 +21,10 @@ class FileTest extends \PHPUnit_Framework_TestCase
         touch(static::FIXTURE_PATH . 'unreadable.file');
         chmod(static::FIXTURE_PATH . 'unreadable.file', 0333);
         touch(static::FIXTURE_PATH . 'unwritable.file');
-        chmod(static::FIXTURE_PATH . 'unwritable.file', 555);
+        chmod(static::FIXTURE_PATH . 'unwritable.file', 0555);
         touch(static::FIXTURE_PATH . 'delete.file');
         touch(static::FIXTURE_PATH . 'content.file');
+        touch(static::FIXTURE_PATH . 'file_with_content');
     }
 
     /**
@@ -38,11 +39,12 @@ class FileTest extends \PHPUnit_Framework_TestCase
             unlink(static::FIXTURE_PATH . 'delete.file');
         }
         unlink(static::FIXTURE_PATH . 'content.file');
+        unlink(static::FIXTURE_PATH . 'file_with_content');
     }
 
     /**
      * Test ::exists method
-     * @dataProvider provisionRealFiles
+     * @dataProvider provideRealFiles
      * @param $providedFile
      */
     public function testExistsTrue($providedFile)
@@ -53,7 +55,7 @@ class FileTest extends \PHPUnit_Framework_TestCase
 
     /**
      * Test ::exists method
-     * @dataProvider provisionFakeFiles
+     * @dataProvider provideFakeFiles
      * @param $providedFile
      */
     public function testExistsFalse($providedFile)
@@ -64,7 +66,7 @@ class FileTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @param $providedFile
-     * @dataProvider provisionReadableFiles
+     * @dataProvider provideReadableFiles
      */
     public function testIsReadableTrue($providedFile)
     {
@@ -74,7 +76,7 @@ class FileTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @param $providedFile
-     * @dataProvider provisionUnreadableFiles
+     * @dataProvider provideUnreadableFiles
      */
     public function testIsReadableFalse($providedFile)
     {
@@ -84,7 +86,8 @@ class FileTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @param $providedFile
-     * @dataProvider provisionReadableFiles
+     * @dataProvider provideReadableFiles
+     * @dataProvider provideWritableFiles
      */
     public function testIsWritableTrue($providedFile)
     {
@@ -94,7 +97,7 @@ class FileTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @param $providedFile
-     * @dataProvider provisionUnwritableFiles
+     * @dataProvider provideUnwritableFiles
      */
     public function testIsWritableFalse($providedFile)
     {
@@ -103,18 +106,18 @@ class FileTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @param $providedFile
-     * @dataProvider provideFilesToDelete
+     * Test ::delete method
      */
-    public function testDeleteTrue($providedFile)
+    public function testDeleteTrue()
     {
+        $providedFile = static::FIXTURE_PATH . 'delete.file';
         $file = new File($providedFile);
         $this->assertTrue($file->delete(), sprintf("%s should be deleted!", $providedFile));
     }
 
     /**
      * @param $providedFile
-     * @dataProvider provisionFakeFiles
+     * @dataProvider provideFakeFiles
      */
     public function testDeleteFalse($providedFile)
     {
@@ -129,18 +132,17 @@ class FileTest extends \PHPUnit_Framework_TestCase
     public function testWrite($providedContent)
     {
         $filename = static::FIXTURE_PATH . 'file_with_content';
-        touch($filename);
+
         $file = new File($filename);
         $file->write($providedContent);
 
         $content = file_get_contents($filename);
         $this->assertEquals($providedContent->get(), $content, "Content written is not equal to the one expected!");
-        unlink($filename);
     }
 
     /**
      * @param $providedFile
-     * @dataProvider provisionUnwritableFiles
+     * @dataProvider provideUnwritableFiles
      * @expectedException \NeedleProject\FileIo\Exception\PermissionDeniedException
      */
     public function testWriteFail($providedFile)
@@ -151,7 +153,7 @@ class FileTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @param $providedFile
-     * @dataProvider provisionUnreadableFiles
+     * @dataProvider provideUnreadableFiles
      * @expectedException \NeedleProject\FileIo\Exception\PermissionDeniedException
      */
     public function testGetContentUnreadableFile($providedFile)
@@ -162,10 +164,10 @@ class FileTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @param $providedFile
-     * @dataProvider provisionFakeFiles
+     * @dataProvider provideFakeFiles
      * @expectedException \NeedleProject\FileIo\Exception\FileNotFoundException
      */
-    public function testtGetContentNonExistentFile($providedFile)
+    public function testGetContentNonExistentFile($providedFile)
     {
         $file = new File($providedFile);
         $file->getContent();
@@ -173,9 +175,13 @@ class FileTest extends \PHPUnit_Framework_TestCase
 
     /**
      * We will test that we receive the desired content
+     *
+     * @param $providedFile
+     * @param $providedContent
+     *
      * @dataProvider provideFileAndContent
      */
-    public function testtGetContentPass($providedFile, $providedContent)
+    public function testGetContentPass($providedFile, $providedContent)
     {
         file_put_contents($providedFile, $providedContent);
 
@@ -188,7 +194,7 @@ class FileTest extends \PHPUnit_Framework_TestCase
      * Provide real files useful for test scenarios
      * @return array
      */
-    public function provisionRealFiles(): array
+    public function provideRealFiles(): array
     {
         return [
             [__FILE__]
@@ -199,10 +205,11 @@ class FileTest extends \PHPUnit_Framework_TestCase
      * Provide fake files useful for test scenarios
      * @return array
      */
-    public function provisionFakeFiles(): array
+    public function provideFakeFiles(): array
     {
         return [
-            [__DIR__ . DIRECTORY_SEPARATOR . 'foo.bar']
+            [__DIR__ . DIRECTORY_SEPARATOR . 'foo.bar'],
+            ['dummy.file']
         ];
     }
 
@@ -210,7 +217,7 @@ class FileTest extends \PHPUnit_Framework_TestCase
      * Provide real readable file
      * @return array
      */
-    public function provisionReadableFiles(): array
+    public function provideReadableFiles(): array
     {
         return [
             [__FILE__]
@@ -221,7 +228,7 @@ class FileTest extends \PHPUnit_Framework_TestCase
      * Provide unreadable file
      * @return array
      */
-    public function provisionUnreadableFiles(): array
+    public function provideUnreadableFiles(): array
     {
         return [
             [static::FIXTURE_PATH . 'unreadable.file']
@@ -232,21 +239,10 @@ class FileTest extends \PHPUnit_Framework_TestCase
      * Provide file that cannot be written
      * @return array
      */
-    public function provisionUnwritableFiles(): array
+    public function provideUnwritableFiles(): array
     {
         return [
             [static::FIXTURE_PATH . 'unwritable.file']
-        ];
-    }
-
-    /**
-     * Provide files to be deleted
-     * @return array
-     */
-    public function provideFilesToDelete(): array
-    {
-        return [
-            [static::FIXTURE_PATH . 'delete.file']
         ];
     }
 
@@ -270,6 +266,18 @@ class FileTest extends \PHPUnit_Framework_TestCase
     {
         return [
             [static::FIXTURE_PATH . 'content.file', 'Lorem ipsum']
+        ];
+    }
+
+    /**
+     * Provide a writable file and also a writable path
+     * @return array
+     */
+    public function provideWritableFiles(): array
+    {
+        return [
+            [__FILE__],
+            [__DIR__ . DIRECTORY_SEPARATOR . 'foo.bar'],
         ];
     }
 }

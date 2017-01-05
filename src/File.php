@@ -34,7 +34,7 @@ class File
      */
     public function __construct(string $filename)
     {
-        $this->filename = $filename;
+        $this->filename = preg_replace('#(\\\|\/)#', DIRECTORY_SEPARATOR, $filename);
     }
 
     /**
@@ -60,7 +60,12 @@ class File
      */
     public function isWritable(): bool
     {
-        return is_writable($this->filename);
+        if ($this->exists()) {
+            return is_writable($this->filename);
+        }
+        $parts = explode(DIRECTORY_SEPARATOR, $this->filename);
+        array_pop($parts);
+        return is_writable(implode(DIRECTORY_SEPARATOR, $parts));
     }
 
     /**
