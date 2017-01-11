@@ -7,6 +7,16 @@ use Symfony\Component\DependencyInjection\Tests\Compiler\F;
 class FileTest extends \PHPUnit_Framework_TestCase
 {
     /**
+     * @var bool    If we should apply a stub
+     */
+    static public $applyStub = false;
+
+    /**
+     * @var bool    If the the stub should trigger an error
+     */
+    static public $disableStubsError = false;
+
+    /**
      * @const string Fixture default directory
      */
     const FIXTURE_PATH = __DIR__ . DIRECTORY_SEPARATOR . 'fixture' . DIRECTORY_SEPARATOR . 'files' . DIRECTORY_SEPARATOR;
@@ -25,6 +35,8 @@ class FileTest extends \PHPUnit_Framework_TestCase
         touch(static::FIXTURE_PATH . 'delete.file');
         touch(static::FIXTURE_PATH . 'content.file');
         touch(static::FIXTURE_PATH . 'file_with_content');
+        static::$applyStub = false;
+        static::$disableStubsError = false;
     }
 
     /**
@@ -66,7 +78,7 @@ class FileTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @param $providedFile
-     * @dataProvider provideReadableFiles
+     * @dataProvider provideRealFiles
      */
     public function testIsReadableTrue($providedFile)
     {
@@ -86,7 +98,7 @@ class FileTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @param $providedFile
-     * @dataProvider provideReadableFiles
+     * @dataProvider provideRealFiles
      * @dataProvider provideWritableFiles
      */
     public function testIsWritableTrue($providedFile)
@@ -174,6 +186,37 @@ class FileTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * @param $providedFile
+     * @dataProvider provideRealFiles
+     * @expectedException \NeedleProject\FileIo\Exception\IOException
+     * @expectedExceptionMessage Dummy error!
+     */
+    public function testGetContentConvertedException($providedFile)
+    {
+        require_once 'stub/file_get_contents.php';
+        static::$applyStub = true;
+
+        $file = new File($providedFile);
+        $file->getContent();
+    }
+
+    /**
+     * @param $providedFile
+     * @dataProvider provideRealFiles
+     * @expectedException \NeedleProject\FileIo\Exception\IOException
+     * @expectedExceptionMessageRegExp /Could not retrieve content! Error message:/
+     */
+    public function testGetContentFalse($providedFile)
+    {
+        require_once 'stub/file_get_contents.php';
+        static::$applyStub = true;
+        static::$disableStubsError = true;
+
+        $file = new File($providedFile);
+        $file->getContent();
+    }
+
+    /**
      * We will test that we receive the desired content
      *
      * @param $providedFile
@@ -184,7 +227,6 @@ class FileTest extends \PHPUnit_Framework_TestCase
     public function testGetContentPass($providedFile, $providedContent)
     {
         file_put_contents($providedFile, $providedContent);
-
         $file = new File($providedFile);
         $content = $file->getContent();
         $this->assertEquals($providedContent, $content->get(), "The content is not the same!");
@@ -210,17 +252,6 @@ class FileTest extends \PHPUnit_Framework_TestCase
         return [
             [__DIR__ . DIRECTORY_SEPARATOR . 'foo.bar'],
             ['dummy.file']
-        ];
-    }
-
-    /**
-     * Provide real readable file
-     * @return array
-     */
-    public function provideReadableFiles(): array
-    {
-        return [
-            [__FILE__]
         ];
     }
 

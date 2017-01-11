@@ -10,7 +10,9 @@ namespace NeedleProject\FileIo;
 use NeedleProject\FileIo\Content\Content;
 use NeedleProject\FileIo\Content\ContentInterface;
 use NeedleProject\FileIo\Exception\FileNotFoundException;
+use NeedleProject\FileIo\Exception\IOException;
 use NeedleProject\FileIo\Exception\PermissionDeniedException;
+use NeedleProject\FileIo\Util\ErrorHandler;
 
 /**
  * Class File
@@ -23,6 +25,7 @@ use NeedleProject\FileIo\Exception\PermissionDeniedException;
 class File
 {
     /**
+     * File's name including the path
      * @var null|string
      */
     private $filename = null;
@@ -87,6 +90,7 @@ class File
     /**
      * @return \NeedleProject\FileIo\Content\ContentInterface
      * @throws \NeedleProject\FileIo\Exception\FileNotFoundException
+     * @throws \NeedleProject\FileIo\Exception\IOException
      * @throws \NeedleProject\FileIo\Exception\PermissionDeniedException
      */
     public function getContent(): ContentInterface
@@ -99,17 +103,30 @@ class File
                 sprintf("You do not have permissions to read file %s!", $this->filename)
             );
         }
-        return new Content(file_get_contents($this->filename));
+        ErrorHandler::convertErrorsToExceptions();
+        $stringContent = file_get_contents($this->filename);
+        ErrorHandler::restoreErrorHandler();
+        if (false === $stringContent) {
+            throw new IOException(
+                sprintf("Could not retrieve content! Error message: %s", error_get_last()['message'])
+            );
+        }
+        return new Content($stringContent);
     }
 
     /**
      * Deletes the current file
+     * @return bool
+     * @throws \NeedleProject\FileIo\Exception\IOException
      */
     public function delete(): bool
     {
         if ($this->exists() === false) {
             return false;
         }
-        return unlink($this->filename);
+        ErrorHandler::convertErrorsToExceptions();
+        $unlinkResult = unlink($this->filename);
+        ErrorHandler::restoreErrorHandler();
+        return $unlinkResult;
     }
 }
