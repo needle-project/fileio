@@ -7,12 +7,14 @@ use Symfony\Component\DependencyInjection\Tests\Compiler\F;
 class FileTest extends \PHPUnit_Framework_TestCase
 {
     /**
-     * @var bool    If we should apply a stub
+     * If we should apply a stub
+     * @var bool
      */
     static public $applyStub = false;
 
     /**
-     * @var bool    If the the stub should trigger an error
+     * If the the stub should trigger an error
+     * @var bool
      */
     static public $disableStubsError = false;
 
@@ -233,6 +235,90 @@ class FileTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * Test extension
+     *
+     * @param $filename
+     * @param $extension
+     *
+     * @dataProvider provideFileAndExtension
+     */
+    public function testGetExtension($filename, $extension)
+    {
+        $file = new File($filename);
+        $this->assertEquals(
+            $extension,
+            $file->getExtension(),
+            sprintf("Expected extension %s, received %s", $extension, $file->getExtension())
+        );
+    }
+
+    /**
+     * Test has extension
+     *
+     * @param $filename
+     *
+     * @dataProvider provideFilesWithExtension
+     */
+    public function testHasExtensionTrue($filename)
+    {
+        $file = new File($filename);
+        $this->assertTrue(
+            $file->hasExtension(),
+            sprintf("File %s should have extension", $filename)
+        );
+    }
+
+    /**
+     * Test that it does not have an extension
+     *
+     * @param $filename
+     *
+     * @dataProvider provideFilesWithoutExtension
+     */
+    public function testHasExtensionFalse($filename)
+    {
+        $file = new File($filename);
+        $this->assertFalse(
+            $file->hasExtension(),
+            sprintf("File %s should not have an extension", $filename)
+        );
+    }
+
+    /**
+     * Test name retrieval
+     *
+     * @dataProvider provideFileAnExpectedNames
+     * @param $filename
+     * @param $expectedName
+     */
+    public function testGetName($filename, $expectedName)
+    {
+        $file = new File($filename);
+        $this->assertEquals(
+            $expectedName,
+            $file->getName(),
+            sprintf("Expected extension %s, received %s", $expectedName, $file->getName())
+        );
+    }
+
+    /**
+     * Test name retrieval
+     *
+     * @dataProvider provideFileAnExpectedBasenames
+     * @param $filename
+     * @param $expectedBasename
+     */
+    public function testGetBasename($filename, $expectedBasename)
+    {
+        $file = new File($filename);
+        $this->assertEquals(
+            $expectedBasename,
+            $file->getBasename(),
+            sprintf("Expected extension %s, received %s", $expectedBasename, $file->getBasename())
+        );
+    }
+
+    /**
      * Provide real files useful for test scenarios
      * @return array
      */
@@ -309,6 +395,72 @@ class FileTest extends \PHPUnit_Framework_TestCase
         return [
             [__FILE__],
             [__DIR__ . DIRECTORY_SEPARATOR . 'foo.bar'],
+        ];
+    }
+
+    /**
+     * Provide filenames and their expected extensions
+     * @return array
+     */
+    public function provideFileAndExtension(): array
+    {
+        return [
+            [__FILE__, 'php'],
+            ['.htaccess', 'htaccess'],
+            ['name', ''],
+            ['a.combined.filename.with.multiple.ext.separator', 'separator']
+        ];
+    }
+
+    /**
+     * @return array
+     */
+    public function provideFilesWithExtension(): array
+    {
+        return [
+            [__FILE__],
+            ['.htaccess'],
+            ['a.combined.filename.with.multiple.ext.separator']
+        ];
+    }
+
+    /**
+     * @return array
+     */
+    public function provideFilesWithoutExtension(): array
+    {
+        return [
+            [pathinfo(__FILE__, PATHINFO_FILENAME)],
+            ['name']
+        ];
+    }
+
+    /**
+     * Provide filenames and their expected extensions
+     * @return array
+     */
+    public function provideFileAnExpectedNames(): array
+    {
+        return [
+            [__FILE__, pathinfo(__FILE__, PATHINFO_FILENAME)],
+            ['.htaccess', ''],
+            ['name', 'name'],
+            ['a.combined.filename.with.multiple.ext.separator', 'a.combined.filename.with.multiple.ext']
+        ];
+    }
+
+    /**
+     * Provide filenames and their expected extensions
+     * @return array
+     */
+    public function provideFileAnExpectedBasenames(): array
+    {
+        return [
+            [__FILE__, pathinfo(__FILE__, PATHINFO_BASENAME)],
+            [__DIR__ . DIRECTORY_SEPARATOR . '.htaccess', '.htaccess'],
+            ['.htaccess', '.htaccess'],
+            ['name', 'name'],
+            ['a.combined.filename.with.multiple.ext.separator', 'a.combined.filename.with.multiple.ext.separator']
         ];
     }
 }

@@ -25,10 +25,34 @@ use NeedleProject\FileIo\Util\ErrorHandler;
 class File
 {
     /**
+     * File extension separator
+     * @const string
+     */
+    const EXTENSION_SEPARATOR = '.';
+
+    /**
      * File's name including the path
      * @var null|string
      */
     private $filename = null;
+
+    /**
+     * File's extension - For no extension a blank string will be used
+     * @var null|string
+     */
+    private $extension = null;
+
+    /**
+     * File's name without extension
+     * @var null|string
+     */
+    private $name = null;
+
+    /**
+     * Whether the file has an extension or if it is set by us
+     * @var bool
+     */
+    private $hasExtension = false;
 
     /**
      * File constructor.
@@ -38,6 +62,17 @@ class File
     public function __construct(string $filename)
     {
         $this->filename = preg_replace('#(\\\|\/)#', DIRECTORY_SEPARATOR, $filename);
+        $fileParts = explode(DIRECTORY_SEPARATOR, $this->filename);
+        $filename = array_pop($fileParts);
+        if (false !== strpos($filename, static::EXTENSION_SEPARATOR)) {
+            $this->hasExtension = true;
+            $filenameParts = explode(static::EXTENSION_SEPARATOR, $filename);
+            $this->extension = array_pop($filenameParts);
+            $this->name = implode(static::EXTENSION_SEPARATOR, $filenameParts);
+        } else {
+            $this->name = $filename;
+            $this->extension = '';
+        }
     }
 
     /**
@@ -128,5 +163,44 @@ class File
         $unlinkResult = unlink($this->filename);
         ErrorHandler::restoreErrorHandler();
         return $unlinkResult;
+    }
+
+    /**
+     * State existence of a file's extension
+     * @return bool
+     */
+    public function hasExtension(): bool
+    {
+        return $this->hasExtension;
+    }
+
+    /**
+     * Get file's extension
+     * @return string
+     */
+    public function getExtension(): string
+    {
+        return $this->extension;
+    }
+
+    /**
+     * Get file's name without extension
+     * @return string
+     */
+    public function getName(): string
+    {
+        return $this->name;
+    }
+
+    /**
+     * Get file's name with extension
+     * @return string
+     */
+    public function getBasename(): string
+    {
+        if (false === $this->hasExtension()) {
+            return $this->name;
+        }
+        return $this->name . static::EXTENSION_SEPARATOR . $this->extension;
     }
 }
