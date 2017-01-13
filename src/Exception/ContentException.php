@@ -5,21 +5,16 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-namespace NeedleProject\FileIo\Content;
+namespace NeedleProject\FileIo\Exception;
 
 /**
- * Interface ContentInterface
+ * Class File
  *
- * @package NeedleProject\FileIo\Content
+ * @package NeedleProject\FileIo\Exception
  * @author Adrian Tilita <adrian@tilita.ro>
  * @copyright 2017 Adrian Tilita
  * @license https://opensource.org/licenses/MIT MIT Licence
  */
-interface ContentInterface
+class ContentException extends \Exception
 {
-    /**
-     * Returns the content in one string
-     * @return string
-     */
-    public function get(): string;
 }

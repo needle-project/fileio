@@ -9,6 +9,7 @@ namespace NeedleProject\FileIo\Factory;
 
 use NeedleProject\FileIo\Content\Content;
 use NeedleProject\FileIo\Content\ContentInterface;
+use NeedleProject\FileIo\Content\JsonContent;
 
 /**
  * Class ContentFactory
@@ -41,10 +42,9 @@ class ContentFactory
         switch ($extension) {
             /**
              * Create JSON Content
-             * @todo Actually create a JsonContent
              */
             case static::EXT_JSON:
-                return new Content($content);
+                return new JsonContent($content);
                 break;
             /**
              * Default TXT Content

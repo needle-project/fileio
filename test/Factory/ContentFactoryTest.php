@@ -2,6 +2,7 @@
 namespace NeedleProject\FileIo\Factory;
 
 use NeedleProject\FileIo\Content\Content;
+use NeedleProject\FileIo\Content\JsonContent;
 
 class ContentFactoryTest extends \PHPUnit_Framework_TestCase
 {
@@ -53,7 +54,7 @@ class ContentFactoryTest extends \PHPUnit_Framework_TestCase
     public function testCreateForJson()
     {
         $content = $this->factoryInstance->create(ContentFactory::EXT_JSON, "foo");
-        $this->assertInstanceOf(Content::class, $content);
+        $this->assertInstanceOf(JsonContent::class, $content);
         $this->assertEquals('foo', $content->get());
     }
 }
