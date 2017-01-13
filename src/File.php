@@ -7,11 +7,11 @@
  */
 namespace NeedleProject\FileIo;
 
-use NeedleProject\FileIo\Content\Content;
 use NeedleProject\FileIo\Content\ContentInterface;
 use NeedleProject\FileIo\Exception\FileNotFoundException;
 use NeedleProject\FileIo\Exception\IOException;
 use NeedleProject\FileIo\Exception\PermissionDeniedException;
+use NeedleProject\FileIo\Factory\ContentFactory;
 use NeedleProject\FileIo\Util\ErrorHandler;
 
 /**
@@ -19,7 +19,7 @@ use NeedleProject\FileIo\Util\ErrorHandler;
  *
  * @package NeedleProject\FileIo
  * @author Adrian Tilita <adrian@tilita.ro>
- * @copyright 2016-2017 Adrian Tilita
+ * @copyright 2017 Adrian Tilita
  * @license https://opensource.org/licenses/MIT MIT Licence
  */
 class File
@@ -53,6 +53,11 @@ class File
      * @var bool
      */
     private $hasExtension = false;
+
+    /**
+     * @var null|ContentFactory
+     */
+    private $contentFactory = null;
 
     /**
      * File constructor.
@@ -146,7 +151,8 @@ class File
                 sprintf("Could not retrieve content! Error message: %s", error_get_last()['message'])
             );
         }
-        return new Content($stringContent);
+        return $this->getFactory()
+            ->create($this->extension, $stringContent);
     }
 
     /**
@@ -202,5 +208,17 @@ class File
             return $this->name;
         }
         return $this->name . static::EXTENSION_SEPARATOR . $this->extension;
+    }
+
+    /**
+     * Returns a factory responsible for creating appropriate content
+     * @return \NeedleProject\FileIo\Factory\ContentFactory
+     */
+    protected function getFactory(): ContentFactory
+    {
+        if (is_null($this->contentFactory)) {
+            $this->contentFactory = new ContentFactory();
+        }
+        return $this->contentFactory;
     }
 }

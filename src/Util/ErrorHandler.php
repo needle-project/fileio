@@ -14,7 +14,7 @@ use NeedleProject\FileIo\Exception\IOException;
  *
  * @package NeedleProject\FileIo\Util
  * @author Adrian Tilita <adrian@tilita.ro>
- * @copyright 2016-2017 Adrian Tilita
+ * @copyright 2017 Adrian Tilita
  * @license https://opensource.org/licenses/MIT MIT Licence
  */
 class ErrorHandler

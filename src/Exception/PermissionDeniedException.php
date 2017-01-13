@@ -12,7 +12,7 @@ namespace NeedleProject\FileIo\Exception;
  *
  * @package NeedleProject\FileIo\Exception
  * @author Adrian Tilita <adrian@tilita.ro>
- * @copyright 2016-2017 Adrian Tilita
+ * @copyright 2017 Adrian Tilita
  * @license https://opensource.org/licenses/MIT MIT Licence
  */
 class PermissionDeniedException extends IOException
