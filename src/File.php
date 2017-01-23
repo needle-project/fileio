@@ -12,6 +12,7 @@ use NeedleProject\FileIo\Exception\FileNotFoundException;
 use NeedleProject\FileIo\Exception\IOException;
 use NeedleProject\FileIo\Exception\PermissionDeniedException;
 use NeedleProject\FileIo\Factory\ContentFactory;
+use NeedleProject\FileIo\Helper\PathHelper;
 use NeedleProject\FileIo\Util\ErrorHandler;
 
 /**
@@ -34,7 +35,7 @@ class File
      * File's name including the path
      * @var null|string
      */
-    private $filename = null;
+    private $filenameWithPath = null;
 
     /**
      * File's extension - For no extension a blank string will be used
@@ -62,22 +63,20 @@ class File
     /**
      * File constructor.
      *
-     * @param string $filename
+     * @param string $filename_with_path
      */
-    public function __construct(string $filename)
+    public function __construct(string $filename_with_path)
     {
-        $this->filename = preg_replace('#(\\\|\/)#', DIRECTORY_SEPARATOR, $filename);
-        $fileParts = explode(DIRECTORY_SEPARATOR, $this->filename);
-        $filename = array_pop($fileParts);
-        if (false !== strpos($filename, static::EXTENSION_SEPARATOR)) {
-            $this->hasExtension = true;
-            $filenameParts = explode(static::EXTENSION_SEPARATOR, $filename);
-            $this->extension = array_pop($filenameParts);
-            $this->name = implode(static::EXTENSION_SEPARATOR, $filenameParts);
-        } else {
-            $this->name = $filename;
-            $this->extension = '';
+        $pathHelper = new PathHelper();
+        $this->filenameWithPath = $pathHelper->normalizePathSeparator($filename_with_path);
+        $filename = $pathHelper->extractFilenameFromPath($this->filenameWithPath);
+        if (empty($filename)) {
+            throw new \RuntimeException(
+                sprintf('Given path %s does not represents a file!', $filename_with_path)
+            );
         }
+        list($this->name, $this->extension) = $pathHelper->splitFilename($filename);
+        $this->hasExtension = (bool)$this->extension;
     }
 
     /**
@@ -86,7 +85,7 @@ class File
      */
     public function exists(): bool
     {
-        return file_exists($this->filename);
+        return file_exists($this->filenameWithPath);
     }
 
     /**
@@ -95,7 +94,7 @@ class File
      */
     public function isReadable(): bool
     {
-        return is_readable($this->filename);
+        return is_readable($this->filenameWithPath);
     }
 
     /**
@@ -104,9 +103,9 @@ class File
     public function isWritable(): bool
     {
         if ($this->exists()) {
-            return is_writable($this->filename);
+            return is_writable($this->filenameWithPath);
         }
-        $parts = explode(DIRECTORY_SEPARATOR, $this->filename);
+        $parts = explode(DIRECTORY_SEPARATOR, $this->filenameWithPath);
         array_pop($parts);
         return is_writable(implode(DIRECTORY_SEPARATOR, $parts));
     }
@@ -123,7 +122,7 @@ class File
         if ($this->isWritable() === false) {
             throw new PermissionDeniedException("The current file is not writable!");
         }
-        file_put_contents($this->filename, $content->get());
+        file_put_contents($this->filenameWithPath, $content->get());
         return $this;
     }
 
@@ -136,22 +135,22 @@ class File
     public function getContent(): ContentInterface
     {
         if ($this->exists() === false) {
-            throw new FileNotFoundException(sprintf("%s does not exists!", $this->filename));
+            throw new FileNotFoundException(sprintf("%s does not exists!", $this->filenameWithPath));
         }
         if ($this->isReadable() === false) {
             throw new PermissionDeniedException(
-                sprintf("You do not have permissions to read file %s!", $this->filename)
+                sprintf("You do not have permissions to read file %s!", $this->filenameWithPath)
             );
         }
         ErrorHandler::convertErrorsToExceptions();
-        $stringContent = file_get_contents($this->filename);
+        $stringContent = file_get_contents($this->filenameWithPath);
         ErrorHandler::restoreErrorHandler();
         if (false === $stringContent) {
             throw new IOException(
                 sprintf("Could not retrieve content! Error message: %s", error_get_last()['message'])
             );
         }
-        return $this->getFactory()
+        return $this->getContentFactory()
             ->create($this->extension, $stringContent);
     }
 
@@ -166,7 +165,7 @@ class File
             return false;
         }
         ErrorHandler::convertErrorsToExceptions();
-        $unlinkResult = unlink($this->filename);
+        $unlinkResult = unlink($this->filenameWithPath);
         ErrorHandler::restoreErrorHandler();
         return $unlinkResult;
     }
@@ -214,7 +213,7 @@ class File
      * Returns a factory responsible for creating appropriate content
      * @return \NeedleProject\FileIo\Factory\ContentFactory
      */
-    protected function getFactory(): ContentFactory
+    protected function getContentFactory(): ContentFactory
     {
         if (is_null($this->contentFactory)) {
             $this->contentFactory = new ContentFactory();
