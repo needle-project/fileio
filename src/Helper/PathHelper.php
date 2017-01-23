@@ -41,12 +41,12 @@ class PathHelper
      *
      * Example: from /foo/bar/file.ext will result file.ext
      *
-     * @param string $file_path
+     * @param string $filePath
      * @return string
      */
-    public function extractFilenameFromPath(string $file_path): string
+    public function extractFilenameFromPath(string $filePath): string
     {
-        $fileParts = explode(DIRECTORY_SEPARATOR, $file_path);
+        $fileParts = explode(DIRECTORY_SEPARATOR, $filePath);
         return array_pop($fileParts);
     }
 

@@ -319,6 +319,16 @@ class FileTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * @expectedException \RuntimeException
+     * @dataProvider provideExceptionalCreationScenario
+     * @param $filePath
+     */
+    public function testFileCreationWithDir($filePath)
+    {
+        new File($filePath);
+    }
+
+    /**
      * Provide real files useful for test scenarios
      * @return array
      */
@@ -461,6 +471,18 @@ class FileTest extends \PHPUnit_Framework_TestCase
             ['.htaccess', '.htaccess'],
             ['name', 'name'],
             ['a.combined.filename.with.multiple.ext.separator', 'a.combined.filename.with.multiple.ext.separator']
+        ];
+    }
+
+    /**
+     * Provide scenarios that will fail to create the file
+     * @return array
+     */
+    public function provideExceptionalCreationScenario(): array
+    {
+        return [
+            [__DIR__],
+            [__DIR__ . DIRECTORY_SEPARATOR]
         ];
     }
 }

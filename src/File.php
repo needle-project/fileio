@@ -63,16 +63,16 @@ class File
     /**
      * File constructor.
      *
-     * @param string $filename_with_path
+     * @param string $filenameWithPath
      */
-    public function __construct(string $filename_with_path)
+    public function __construct(string $filenameWithPath)
     {
         $pathHelper = new PathHelper();
-        $this->filenameWithPath = $pathHelper->normalizePathSeparator($filename_with_path);
+        $this->filenameWithPath = $pathHelper->normalizePathSeparator($filenameWithPath);
         $filename = $pathHelper->extractFilenameFromPath($this->filenameWithPath);
-        if (empty($filename)) {
+        if (empty($filename) || false === $this->validatePath($this->filenameWithPath)) {
             throw new \RuntimeException(
-                sprintf('Given path %s does not represents a file!', $filename_with_path)
+                sprintf('Given path %s does not represents a file!', $filenameWithPath)
             );
         }
         list($this->name, $this->extension) = $pathHelper->splitFilename($filename);
@@ -219,5 +219,18 @@ class File
             $this->contentFactory = new ContentFactory();
         }
         return $this->contentFactory;
+    }
+
+    /**
+     * Validate if the given path is not a directory
+     * @param string $filenameWithPath
+     * @return bool
+     */
+    private function validatePath(string $filenameWithPath): bool
+    {
+        if ($this->exists() && is_dir($this->filenameWithPath)) {
+            return false;
+        }
+        return true;
     }
 }
