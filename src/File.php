@@ -228,7 +228,7 @@ class File
      */
     private function validatePath(string $filenameWithPath): bool
     {
-        if ($this->exists() && is_dir($this->filenameWithPath)) {
+        if ($this->exists() && is_dir($filenameWithPath)) {
             return false;
         }
         return true;
