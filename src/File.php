@@ -13,7 +13,7 @@ use NeedleProject\FileIo\Exception\IOException;
 use NeedleProject\FileIo\Exception\PermissionDeniedException;
 use NeedleProject\FileIo\Factory\ContentFactory;
 use NeedleProject\FileIo\Helper\PathHelper;
-use NeedleProject\FileIo\Util\ErrorHandler;
+use NeedleProject\Common\Util\ErrorToExceptionConverter;
 
 /**
  * Class File
@@ -61,6 +61,11 @@ class File
     private $contentFactory = null;
 
     /**
+     * @var null|ErrorToExceptionConverter
+     */
+    private $errorHandler = null;
+
+    /**
      * File constructor.
      *
      * @param string $filenameWithPath
@@ -77,6 +82,7 @@ class File
         }
         list($this->name, $this->extension) = $pathHelper->splitFilename($filename);
         $this->hasExtension = (bool)$this->extension;
+        $this->errorHandler = new ErrorToExceptionConverter();
     }
 
     /**
@@ -142,9 +148,9 @@ class File
                 sprintf("You do not have permissions to read file %s!", $this->filenameWithPath)
             );
         }
-        ErrorHandler::convertErrorsToExceptions();
+        $this->convertErrors();
         $stringContent = file_get_contents($this->filenameWithPath);
-        ErrorHandler::restoreErrorHandler();
+        $this->resetErrorHandler();
         if (false === $stringContent) {
             throw new IOException(
                 sprintf("Could not retrieve content! Error message: %s", error_get_last()['message'])
@@ -164,9 +170,9 @@ class File
         if ($this->exists() === false) {
             return false;
         }
-        ErrorHandler::convertErrorsToExceptions();
+        $this->convertErrors();
         $unlinkResult = unlink($this->filenameWithPath);
-        ErrorHandler::restoreErrorHandler();
+        $this->resetErrorHandler();
         return $unlinkResult;
     }
 
@@ -229,5 +235,21 @@ class File
     private function validatePath(string $filenameWithPath): bool
     {
         return !($this->exists() && is_dir($filenameWithPath));
+    }
+
+    /**
+     * Convert errors to Exception type objects
+     */
+    protected function convertErrors()
+    {
+        $this->errorHandler->convertErrorsToExceptions(E_ALL, IOException::class);
+    }
+
+    /**
+     * Undo error to exception conversion
+     */
+    protected function resetErrorHandler()
+    {
+        $this->errorHandler->restoreErrorHandler();
     }
 }

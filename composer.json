@@ -11,13 +11,20 @@
     }
   ],
   "require": {
-    "php": ">=7.0.0"
+    "php": ">=7.0.0",
+    "needle-project/common": "dev-master"
   },
   "require-dev": {
     "phpunit/phpunit": "^6.0",
     "squizlabs/php_codesniffer": "2.*",
     "phpmd/phpmd" : "@stable"
   },
+  "repositories": [
+    {
+      "type": "vcs",
+      "url": "https://github.com/needle-project/common"
+    }
+  ],
   "autoload": {
     "psr-4": {"NeedleProject\\FileIo\\": "src/"}
   }
