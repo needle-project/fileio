@@ -1,7 +1,9 @@
 <?php
 namespace NeedleProject\FileIo\Content;
 
-class JsonContentTest extends \PHPUnit_Framework_TestCase
+use PHPUnit\Framework\TestCase;
+
+class JsonContentTest extends TestCase
 {
     /**
      * @dataProvider providePassContent

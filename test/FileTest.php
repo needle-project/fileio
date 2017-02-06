@@ -3,8 +3,9 @@ namespace NeedleProject\FileIo;
 
 use NeedleProject\FileIo\Content\Content;
 use Symfony\Component\DependencyInjection\Tests\Compiler\F;
+use PHPUnit\Framework\TestCase;
 
-class FileTest extends \PHPUnit_Framework_TestCase
+class FileTest extends TestCase
 {
     /**
      * If we should apply a stub

@@ -1,7 +1,9 @@
 <?php
 namespace NeedleProject\FileIo\Helper;
 
-class PathHelperTest extends \PHPUnit_Framework_TestCase
+use PHPUnit\Framework\TestCase;
+
+class PathHelperTest extends TestCase
 {
     /**
      * @dataProvider providePathsToNormalize

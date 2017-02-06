@@ -3,8 +3,9 @@ namespace NeedleProject\FileIo\Factory;
 
 use NeedleProject\FileIo\Content\Content;
 use NeedleProject\FileIo\Content\JsonContent;
+use PHPUnit\Framework\TestCase;
 
-class ContentFactoryTest extends \PHPUnit_Framework_TestCase
+class ContentFactoryTest extends TestCase
 {
     /**
      * @var null|ContentFactory

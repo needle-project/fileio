@@ -1,7 +1,9 @@
 <?php
 namespace NeedleProject\FileIo\Content;
 
-class ContentTest extends \PHPUnit_Framework_TestCase
+use PHPUnit\Framework\TestCase;
+
+class ContentTest extends TestCase
 {
     /**
      * @dataProvider contentProvider
