@@ -10,6 +10,7 @@ namespace NeedleProject\FileIo\Factory;
 use NeedleProject\FileIo\Content\Content;
 use NeedleProject\FileIo\Content\ContentInterface;
 use NeedleProject\FileIo\Content\JsonContent;
+use NeedleProject\FileIo\Content\YamlContent;
 
 /**
  * Class ContentFactory
@@ -32,6 +33,16 @@ class ContentFactory
     const EXT_JSON = 'json';
 
     /**
+     * @const string
+     */
+    const EXT_YAML = 'yaml';
+
+    /**
+     * @const string
+     */
+    const EXT_YML = 'yml';
+
+    /**
      * Create a ContentInterface based on the extension and string content
      * @param string $extension
      * @param string $content
@@ -45,6 +56,13 @@ class ContentFactory
              */
             case static::EXT_JSON:
                 return new JsonContent($content);
+                break;
+            /**
+             * Create YAML Content
+             */
+            case static::EXT_YAML:
+            case static::EXT_YML:
+                return new YamlContent($content);
                 break;
             /**
              * Default TXT Content

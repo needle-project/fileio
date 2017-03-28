@@ -32,7 +32,6 @@ class JsonContentTest extends TestCase
         $content->getArray();
     }
 
-
     /**
      * @dataProvider provideInvalidJson
      *

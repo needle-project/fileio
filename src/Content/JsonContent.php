@@ -17,7 +17,7 @@ use NeedleProject\FileIo\Exception\ContentException;
  * @copyright 2017 Adrian Tilita
  * @license https://opensource.org/licenses/MIT MIT Licence
  */
-class JsonContent implements ContentInterface
+class JsonContent implements ArrayContentInterface
 {
     /**
      * @var null|string
