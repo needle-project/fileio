@@ -161,6 +161,36 @@ class File
     }
 
     /**
+     * Add content to the begging of the file
+     * @param string $content
+     * @return $this
+     * @throws \NeedleProject\FileIo\Exception\PermissionDeniedException
+     */
+    public function appendContent(string $content)
+    {
+        if ($this->isWritable() === false) {
+            throw new PermissionDeniedException("The current file is not writable!");
+        }
+        file_put_contents($this->filenameWithPath, $content, FILE_APPEND);
+        return $this;
+    }
+
+    /**
+     * Add content to the begging of the file
+     * @param string $content
+     * @return $this
+     * @throws \NeedleProject\FileIo\Exception\PermissionDeniedException
+     */
+    public function prependContent(string $content)
+    {
+        if ($this->isWritable() === false) {
+            throw new PermissionDeniedException("The current file is not writable!");
+        }
+        file_put_contents($this->filenameWithPath, $content . $this->getContent()->get());
+        return $this;
+    }
+
+    /**
      * Deletes the current file
      * @return bool
      * @throws \NeedleProject\FileIo\Exception\IOException
