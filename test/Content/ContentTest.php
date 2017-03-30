@@ -12,9 +12,28 @@ class ContentTest extends TestCase
     public function testGet($providedContent)
     {
         $content = new Content($providedContent);
+
+        // get simple content
         $this->assertEquals(
             $providedContent,
             $content->get(),
+            sprintf("Provided content does not equals to the one returned!")
+        );
+
+        // get array content
+        $this->assertEquals(
+            [$providedContent],
+            $content->getArray(),
+            sprintf("Provided content does not equals to the one returned!")
+        );
+
+        // get object content
+        $providedObject = new \stdClass();
+        $providedObject->content = $providedContent;
+
+        $this->assertEquals(
+            $providedObject,
+            $content->getObject(),
             sprintf("Provided content does not equals to the one returned!")
         );
     }

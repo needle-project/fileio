@@ -3,6 +3,7 @@ namespace NeedleProject\FileIo\Factory;
 
 use NeedleProject\FileIo\Content\Content;
 use NeedleProject\FileIo\Content\JsonContent;
+use NeedleProject\FileIo\Content\YamlContent;
 use PHPUnit\Framework\TestCase;
 
 class ContentFactoryTest extends TestCase
@@ -56,6 +57,20 @@ class ContentFactoryTest extends TestCase
     {
         $content = $this->factoryInstance->create(ContentFactory::EXT_JSON, "foo");
         $this->assertInstanceOf(JsonContent::class, $content);
+        $this->assertEquals('foo', $content->get());
+    }
+
+    /**
+     * Test factory for yaml files content
+     */
+    public function testCreateForYaml()
+    {
+        $content = $this->factoryInstance->create(ContentFactory::EXT_YML, "foo");
+        $this->assertInstanceOf(YamlContent::class, $content);
+        $this->assertEquals('foo', $content->get());
+
+        $content = $this->factoryInstance->create(ContentFactory::EXT_YAML, "foo");
+        $this->assertInstanceOf(YamlContent::class, $content);
         $this->assertEquals('foo', $content->get());
     }
 }

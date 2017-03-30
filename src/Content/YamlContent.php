@@ -7,6 +7,8 @@
  */
 namespace NeedleProject\FileIo\Content;
 
+use NeedleProject\FileIo\Exception\ContentException;
+use Symfony\Component\Yaml\Exception\ParseException;
 use Symfony\Component\Yaml\Yaml;
 
 /**
@@ -14,31 +16,8 @@ use Symfony\Component\Yaml\Yaml;
  *
  * @package NeedleProject\FileIo\Content
  */
-class YamlContent implements ArrayContentInterface
+class YamlContent extends Content implements ContentInterface
 {
-    /**
-     * @var null|string
-     */
-    private $content = null;
-
-    /**
-     * Content constructor.
-     *
-     * @param string $content
-     */
-    public function __construct(string $content)
-    {
-        $this->content = $content;
-    }
-
-    /**
-     * @return string
-     */
-    public function get(): string
-    {
-        return $this->content;
-    }
-
     /**
      * Return the content as an array
      *
@@ -47,6 +26,24 @@ class YamlContent implements ArrayContentInterface
      */
     public function getArray(): array
     {
-        return Yaml::parse($this->content);
+        try {
+            return Yaml::parse($this->get(), true);
+        } catch (ParseException $e) {
+            throw new ContentException(
+                sprintf(
+                    "YAML could not be parsed: %s",
+                    $e->getMessage()
+                )
+            );
+        }
+    }
+
+    /**
+     * {@inheritdoc}
+     * @return \stdClass
+     */
+    public function getObject()
+    {
+        return (object)$this->getArray();
     }
 }

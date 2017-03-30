@@ -22,4 +22,15 @@ interface ContentInterface
      * @return string
      */
     public function get(): string;
+
+    /**
+     * @return array
+     */
+    public function getArray(): array;
+
+    /**
+     * Should return object instances of the content (most cases probably a StdClass)
+     * @return mixed
+     */
+    public function getObject();
 }

@@ -2,7 +2,8 @@
 namespace NeedleProject\FileIo;
 
 use NeedleProject\FileIo\Content\Content;
-use Symfony\Component\DependencyInjection\Tests\Compiler\F;
+use NeedleProject\FileIo\Content\JsonContent;
+use NeedleProject\FileIo\Content\YamlContent;
 use PHPUnit\Framework\TestCase;
 
 class FileTest extends TestCase
@@ -22,7 +23,8 @@ class FileTest extends TestCase
     /**
      * @const string Fixture default directory
      */
-    const FIXTURE_PATH = __DIR__ . DIRECTORY_SEPARATOR . 'fixture' . DIRECTORY_SEPARATOR . 'files' . DIRECTORY_SEPARATOR;
+    const FIXTURE_PATH = __DIR__ . DIRECTORY_SEPARATOR . 'fixture' .
+        DIRECTORY_SEPARATOR . 'files' . DIRECTORY_SEPARATOR;
 
     /**
      * Test setUp
@@ -329,6 +331,71 @@ class FileTest extends TestCase
         new File($filePath);
     }
 
+
+    /**
+     * @dataProvider provideContentChunks
+     * @param $providedContent
+     * @param $extraContent
+     */
+    public function testPrependWrite($providedContent, $extraContent)
+    {
+        $filename = static::FIXTURE_PATH . 'file_with_content';
+
+        $file = new File($filename);
+        $file->write($providedContent);
+        $file->prependContent($extraContent);
+
+        $content = file_get_contents($filename);
+        $this->assertEquals(
+            $extraContent . $providedContent->get(),
+            $content,
+            "Content written is not equal to the one expected!"
+        );
+    }
+
+    /**
+     * @dataProvider provideContentChunks
+     * @param $providedContent
+     * @param $extraContent
+     */
+    public function testAppendWrite($providedContent, $extraContent)
+    {
+        $filename = static::FIXTURE_PATH . 'file_with_content';
+
+        $file = new File($filename);
+        $file->write($providedContent);
+        $file->appendContent($extraContent);
+
+        $content = file_get_contents($filename);
+        $this->assertEquals(
+            $providedContent->get() . $extraContent,
+            $content,
+            "Content written is not equal to the one expected!"
+        );
+    }
+
+    /**
+     * @dataProvider provideUnwritableFiles
+     * @param $filename
+     * @expectedException \NeedleProject\FileIo\Exception\IOException
+     */
+    public function testPrependException($filename)
+    {
+        $file = new File($filename);
+        $file->prependContent('foo');
+    }
+
+    /**
+     * @dataProvider provideUnwritableFiles
+     * @param $filename
+     * @expectedException \NeedleProject\FileIo\Exception\IOException
+     */
+    public function testAppendException($filename)
+    {
+        $file = new File($filename);
+        $file->appendContent('foo');
+    }
+
     /**
      * Provide real files useful for test scenarios
      * @return array
@@ -382,7 +449,21 @@ class FileTest extends TestCase
     {
         return [
             [new Content('foo')],
-            [new Content('bar')]
+            [new Content('bar')],
+            [new JsonContent('{"bar":"foo"}')],
+            [new YamlContent("foo: bar")]
+        ];
+    }
+
+    /**
+     * @return array
+     */
+    public function provideContentChunks(): array
+    {
+        return [
+            [new Content('foo'), "bar"],
+            [new JsonContent('{"bar":"foo"}'), "foo"],
+            [new YamlContent("foo: bar"), "foo"],
         ];
     }
 

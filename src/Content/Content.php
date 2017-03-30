@@ -39,4 +39,24 @@ class Content implements ContentInterface
     {
         return $this->content;
     }
+
+    /**
+     * Return the content as an array
+     *
+     * @return array
+     * @throws \NeedleProject\FileIo\Exception\ContentException
+     */
+    public function getArray(): array
+    {
+        return [$this->content];
+    }
+
+    /**
+     * @return mixed|\stdClass
+     * @throws \NeedleProject\FileIo\Exception\ContentException
+     */
+    public function getObject()
+    {
+        return (object)['content' => $this->content];
+    }
 }

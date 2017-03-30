@@ -17,31 +17,8 @@ use NeedleProject\FileIo\Exception\ContentException;
  * @copyright 2017 Adrian Tilita
  * @license https://opensource.org/licenses/MIT MIT Licence
  */
-class JsonContent implements ArrayContentInterface
+class JsonContent extends Content implements ContentInterface
 {
-    /**
-     * @var null|string
-     */
-    private $content = null;
-
-    /**
-     * Content constructor.
-     *
-     * @param string $content
-     */
-    public function __construct(string $content)
-    {
-        $this->content = $content;
-    }
-
-    /**
-     * @return string
-     */
-    public function get(): string
-    {
-        return $this->content;
-    }
-
     /**
      * Return the content as an array
      *
@@ -50,7 +27,7 @@ class JsonContent implements ArrayContentInterface
      */
     public function getArray(): array
     {
-        $content = json_decode($this->content, true);
+        $content = json_decode($this->get(), true);
         if (json_last_error() !== JSON_ERROR_NONE) {
             throw new ContentException(
                 sprintf("Could not decode content, got %s", json_last_error_msg())
@@ -63,9 +40,9 @@ class JsonContent implements ArrayContentInterface
      * @return \stdClass
      * @throws \NeedleProject\FileIo\Exception\ContentException
      */
-    public function getObject(): \stdClass
+    public function getObject()
     {
-        $content = json_decode($this->content);
+        $content = json_decode($this->get());
         if (json_last_error() !== JSON_ERROR_NONE) {
             throw new ContentException(
                 sprintf("Could not decode content, got %s", json_last_error_msg())

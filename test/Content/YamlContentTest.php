@@ -1,7 +1,7 @@
 <?php
 namespace NeedleProject\FileIo\Content;
 
-use PHPUnit\Framework\TestCase;;
+use PHPUnit\Framework\TestCase;
 
 class YamlContentTest extends TestCase
 {
@@ -16,6 +16,7 @@ class YamlContentTest extends TestCase
     {
         $content = new YamlContent($stringContent);
         $this->assertEquals($expectedArray, $content->getArray());
+        $this->assertEquals((object)$expectedArray, $content->getObject());
     }
 
     /**
@@ -26,7 +27,7 @@ class YamlContentTest extends TestCase
      */
     public function testExceptionContentArray($stringContent)
     {
-        $content = new JsonContent($stringContent);
+        $content = new YamlContent($stringContent);
         $content->getArray();
     }
 
@@ -47,7 +48,9 @@ class YamlContentTest extends TestCase
     public function provideInvalidYaml(): array
     {
         return [
-            ["\xB1\x31"]
+            [
+                "\tfo  bar :o//uvar"
+            ]
         ];
     }
 }
