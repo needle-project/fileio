@@ -27,13 +27,7 @@ class JsonContent extends Content implements ContentInterface
      */
     public function getArray(): array
     {
-        $content = json_decode($this->get(), true);
-        if (json_last_error() !== JSON_ERROR_NONE) {
-            throw new ContentException(
-                sprintf("Could not decode content, got %s", json_last_error_msg())
-            );
-        }
-        return $content;
+        return $this->decodeJson(true);
     }
 
     /**
@@ -42,7 +36,17 @@ class JsonContent extends Content implements ContentInterface
      */
     public function getObject()
     {
-        $content = json_decode($this->get());
+        return $this->decodeJson();
+    }
+
+    /**
+     * @param bool $asArray
+     * @return mixed
+     * @throws \NeedleProject\FileIo\Exception\ContentException
+     */
+    private function decodeJson(bool $asArray = false)
+    {
+        $content = json_decode($this->get(), $asArray);
         if (json_last_error() !== JSON_ERROR_NONE) {
             throw new ContentException(
                 sprintf("Could not decode content, got %s", json_last_error_msg())
