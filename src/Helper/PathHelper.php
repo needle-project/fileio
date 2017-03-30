@@ -64,7 +64,7 @@ class PathHelper
     {
         $extension = '';
         $name = $filename;
-        if (true === strpos($filename, File::EXTENSION_SEPARATOR)) {
+        if (false !== strpos($filename, File::EXTENSION_SEPARATOR)) {
             $filenameParts = explode(File::EXTENSION_SEPARATOR, $filename);
             $extension = array_pop($filenameParts);
             $name = implode(File::EXTENSION_SEPARATOR, $filenameParts);
