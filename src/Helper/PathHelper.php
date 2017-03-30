@@ -62,10 +62,9 @@ class PathHelper
      */
     public function splitFilename(string $filename): array
     {
-        if (false === strpos($filename, File::EXTENSION_SEPARATOR)) {
-            $extension = '';
-            $name = $filename;
-        } else {
+        $extension = '';
+        $name = $filename;
+        if (true === strpos($filename, File::EXTENSION_SEPARATOR)) {
             $filenameParts = explode(File::EXTENSION_SEPARATOR, $filename);
             $extension = array_pop($filenameParts);
             $name = implode(File::EXTENSION_SEPARATOR, $filenameParts);
