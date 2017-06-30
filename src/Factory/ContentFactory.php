@@ -48,7 +48,7 @@ class ContentFactory
      * @param string $content
      * @return \NeedleProject\FileIo\Content\ContentInterface
      */
-    public function create(string $extension, string $content): ContentInterface
+    public function create($extension, $content)
     {
         switch ($extension) {
             /**

@@ -21,12 +21,12 @@ interface ContentInterface
      * Returns the content in one string
      * @return string
      */
-    public function get(): string;
+    public function get();
 
     /**
      * @return array
      */
-    public function getArray(): array;
+    public function getArray();
 
     /**
      * Should return object instances of the content (most cases probably a StdClass)

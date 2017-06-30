@@ -70,7 +70,7 @@ class File
      *
      * @param string $filenameWithPath
      */
-    public function __construct(string $filenameWithPath)
+    public function __construct($filenameWithPath)
     {
         $pathHelper = new PathHelper();
         $this->filenameWithPath = $pathHelper->normalizePathSeparator($filenameWithPath);
@@ -89,7 +89,7 @@ class File
      * States whether the file actually exists on disk
      * @return bool
      */
-    public function exists(): bool
+    public function exists()
     {
         return file_exists($this->filenameWithPath);
     }
@@ -98,7 +98,7 @@ class File
      * States whether the file is readable
      * @return bool
      */
-    public function isReadable(): bool
+    public function isReadable()
     {
         return is_readable($this->filenameWithPath);
     }
@@ -106,7 +106,7 @@ class File
     /**
      * @return bool
      */
-    public function isWritable(): bool
+    public function isWritable()
     {
         if ($this->exists()) {
             return is_writable($this->filenameWithPath);
@@ -123,7 +123,7 @@ class File
      * @return \NeedleProject\FileIo\File
      * @throws \NeedleProject\FileIo\Exception\PermissionDeniedException
      */
-    public function write(ContentInterface $content): File
+    public function write(ContentInterface $content)
     {
         if ($this->isWritable() === false) {
             throw new PermissionDeniedException("The current file is not writable!");
@@ -138,7 +138,7 @@ class File
      * @throws \NeedleProject\FileIo\Exception\IOException
      * @throws \NeedleProject\FileIo\Exception\PermissionDeniedException
      */
-    public function getContent(): ContentInterface
+    public function getContent()
     {
         if ($this->exists() === false) {
             throw new FileNotFoundException(sprintf("%s does not exists!", $this->filenameWithPath));
@@ -166,7 +166,7 @@ class File
      * @return $this
      * @throws \NeedleProject\FileIo\Exception\PermissionDeniedException
      */
-    public function appendContent(string $content)
+    public function appendContent($content)
     {
         if ($this->isWritable() === false) {
             throw new PermissionDeniedException("The current file is not writable!");
@@ -181,7 +181,7 @@ class File
      * @return $this
      * @throws \NeedleProject\FileIo\Exception\PermissionDeniedException
      */
-    public function prependContent(string $content)
+    public function prependContent($content)
     {
         if ($this->isWritable() === false) {
             throw new PermissionDeniedException("The current file is not writable!");
@@ -195,7 +195,7 @@ class File
      * @return bool
      * @throws \NeedleProject\FileIo\Exception\IOException
      */
-    public function delete(): bool
+    public function delete()
     {
         if ($this->exists() === false) {
             return false;
@@ -210,7 +210,7 @@ class File
      * State existence of a file's extension
      * @return bool
      */
-    public function hasExtension(): bool
+    public function hasExtension()
     {
         return $this->hasExtension;
     }
@@ -219,7 +219,7 @@ class File
      * Get file's extension
      * @return string
      */
-    public function getExtension(): string
+    public function getExtension()
     {
         return $this->extension;
     }
@@ -228,7 +228,7 @@ class File
      * Get file's name without extension
      * @return string
      */
-    public function getName(): string
+    public function getName()
     {
         return $this->name;
     }
@@ -237,7 +237,7 @@ class File
      * Get file's name with extension
      * @return string
      */
-    public function getBasename(): string
+    public function getBasename()
     {
         if (false === $this->hasExtension()) {
             return $this->name;
@@ -249,7 +249,7 @@ class File
      * Returns a factory responsible for creating appropriate content
      * @return \NeedleProject\FileIo\Factory\ContentFactory
      */
-    protected function getContentFactory(): ContentFactory
+    protected function getContentFactory()
     {
         if (is_null($this->contentFactory)) {
             $this->contentFactory = new ContentFactory();
@@ -262,7 +262,7 @@ class File
      * @param string $filenameWithPath
      * @return bool
      */
-    private function validatePath(string $filenameWithPath): bool
+    private function validatePath($filenameWithPath)
     {
         return !($this->exists() && is_dir($filenameWithPath));
     }

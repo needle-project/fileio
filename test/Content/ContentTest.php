@@ -1,7 +1,7 @@
 <?php
 namespace NeedleProject\FileIo\Content;
 
-use PHPUnit\Framework\TestCase;
+use PHPUnit_Framework_TestCase as TestCase;
 
 class ContentTest extends TestCase
 {
@@ -41,7 +41,7 @@ class ContentTest extends TestCase
     /**
      * @return array
      */
-    public function contentProvider(): array
+    public function contentProvider()
     {
         return [
             ['foo'],

@@ -25,7 +25,7 @@ class JsonContent extends Content implements ContentInterface
      * @return array
      * @throws \NeedleProject\FileIo\Exception\ContentException
      */
-    public function getArray(): array
+    public function getArray()
     {
         return $this->decodeJson(true);
     }
@@ -44,7 +44,7 @@ class JsonContent extends Content implements ContentInterface
      * @return mixed
      * @throws \NeedleProject\FileIo\Exception\ContentException
      */
-    private function decodeJson(bool $asArray = false)
+    private function decodeJson($asArray = false)
     {
         $content = json_decode($this->get(), $asArray);
         if (json_last_error() !== JSON_ERROR_NONE) {

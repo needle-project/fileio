@@ -4,7 +4,7 @@ namespace NeedleProject\FileIo\Factory;
 use NeedleProject\FileIo\Content\Content;
 use NeedleProject\FileIo\Content\JsonContent;
 use NeedleProject\FileIo\Content\YamlContent;
-use PHPUnit\Framework\TestCase;
+use PHPUnit_Framework_TestCase as TestCase;
 
 class ContentFactoryTest extends TestCase
 {

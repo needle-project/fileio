@@ -4,7 +4,7 @@ namespace NeedleProject\FileIo;
 use NeedleProject\FileIo\Content\Content;
 use NeedleProject\FileIo\Content\JsonContent;
 use NeedleProject\FileIo\Content\YamlContent;
-use PHPUnit\Framework\TestCase;
+use PHPUnit_Framework_TestCase as TestCase;
 
 class FileTest extends TestCase
 {
@@ -23,8 +23,21 @@ class FileTest extends TestCase
     /**
      * @const string Fixture default directory
      */
-    const FIXTURE_PATH = __DIR__ . DIRECTORY_SEPARATOR . 'fixture' .
-        DIRECTORY_SEPARATOR . 'files' . DIRECTORY_SEPARATOR;
+    public static $FIXTURE_PATH = null;
+
+    /**
+     * FileTest constructor.
+     *
+     * @param null   $name
+     * @param array  $data
+     * @param string $dataName
+     */
+    public function __construct($name = null, array $data = array(), $dataName = '')
+    {
+        static::$FIXTURE_PATH = __DIR__ . DIRECTORY_SEPARATOR . 'fixture'
+            . DIRECTORY_SEPARATOR . 'files' . DIRECTORY_SEPARATOR;
+        parent::__construct($name, $data, $dataName);
+    }
 
     /**
      * Test setUp
@@ -32,14 +45,14 @@ class FileTest extends TestCase
     public function setUp()
     {
         // create fixture
-        touch(static::FIXTURE_PATH . 'readable.file');
-        touch(static::FIXTURE_PATH . 'unreadable.file');
-        chmod(static::FIXTURE_PATH . 'unreadable.file', 0333);
-        touch(static::FIXTURE_PATH . 'unwritable.file');
-        chmod(static::FIXTURE_PATH . 'unwritable.file', 0555);
-        touch(static::FIXTURE_PATH . 'delete.file');
-        touch(static::FIXTURE_PATH . 'content.file');
-        touch(static::FIXTURE_PATH . 'file_with_content');
+        touch(static::$FIXTURE_PATH . 'readable.file');
+        touch(static::$FIXTURE_PATH . 'unreadable.file');
+        chmod(static::$FIXTURE_PATH . 'unreadable.file', 0333);
+        touch(static::$FIXTURE_PATH . 'unwritable.file');
+        chmod(static::$FIXTURE_PATH . 'unwritable.file', 0555);
+        touch(static::$FIXTURE_PATH . 'delete.file');
+        touch(static::$FIXTURE_PATH . 'content.file');
+        touch(static::$FIXTURE_PATH . 'file_with_content');
         static::$applyStub = false;
         static::$disableStubsError = false;
     }
@@ -49,14 +62,14 @@ class FileTest extends TestCase
      */
     public function tearDown()
     {
-        unlink(static::FIXTURE_PATH . 'readable.file');
-        unlink(static::FIXTURE_PATH . 'unreadable.file');
-        unlink(static::FIXTURE_PATH . 'unwritable.file');
-        if (file_exists(static::FIXTURE_PATH . 'delete.file')) {
-            unlink(static::FIXTURE_PATH . 'delete.file');
+        unlink(static::$FIXTURE_PATH . 'readable.file');
+        unlink(static::$FIXTURE_PATH . 'unreadable.file');
+        unlink(static::$FIXTURE_PATH . 'unwritable.file');
+        if (file_exists(static::$FIXTURE_PATH . 'delete.file')) {
+            unlink(static::$FIXTURE_PATH . 'delete.file');
         }
-        unlink(static::FIXTURE_PATH . 'content.file');
-        unlink(static::FIXTURE_PATH . 'file_with_content');
+        unlink(static::$FIXTURE_PATH . 'content.file');
+        unlink(static::$FIXTURE_PATH . 'file_with_content');
     }
 
     /**
@@ -127,7 +140,7 @@ class FileTest extends TestCase
      */
     public function testDeleteTrue()
     {
-        $providedFile = static::FIXTURE_PATH . 'delete.file';
+        $providedFile = static::$FIXTURE_PATH . 'delete.file';
         $file = new File($providedFile);
         $this->assertTrue($file->delete(), sprintf("%s should be deleted!", $providedFile));
     }
@@ -148,7 +161,7 @@ class FileTest extends TestCase
      */
     public function testWrite($providedContent)
     {
-        $filename = static::FIXTURE_PATH . 'file_with_content';
+        $filename = static::$FIXTURE_PATH . 'file_with_content';
 
         $file = new File($filename);
         $file->write($providedContent);
@@ -171,7 +184,7 @@ class FileTest extends TestCase
     /**
      * @param $providedFile
      * @dataProvider provideUnreadableFiles
-     * @expectedException \NeedleProject\FileIo\Exception\PermissionDeniedException
+     * @expectedException NeedleProject\FileIo\Exception\PermissionDeniedException
      */
     public function testGetContentUnreadableFile($providedFile)
     {
@@ -182,7 +195,7 @@ class FileTest extends TestCase
     /**
      * @param $providedFile
      * @dataProvider provideFakeFiles
-     * @expectedException \NeedleProject\FileIo\Exception\FileNotFoundException
+     * @expectedException NeedleProject\FileIo\Exception\FileNotFoundException
      */
     public function testGetContentNonExistentFile($providedFile)
     {
@@ -193,7 +206,7 @@ class FileTest extends TestCase
     /**
      * @param $providedFile
      * @dataProvider provideRealFiles
-     * @expectedException \NeedleProject\FileIo\Exception\IOException
+     * @expectedException NeedleProject\FileIo\Exception\IOException
      * @expectedExceptionMessage Dummy error!
      */
     public function testGetContentConvertedException($providedFile)
@@ -208,7 +221,7 @@ class FileTest extends TestCase
     /**
      * @param $providedFile
      * @dataProvider provideRealFiles
-     * @expectedException \NeedleProject\FileIo\Exception\IOException
+     * @expectedException NeedleProject\FileIo\Exception\IOException
      * @expectedExceptionMessageRegExp /Could not retrieve content! Error message:/
      */
     public function testGetContentFalse($providedFile)
@@ -339,7 +352,7 @@ class FileTest extends TestCase
      */
     public function testPrependWrite($providedContent, $extraContent)
     {
-        $filename = static::FIXTURE_PATH . 'file_with_content';
+        $filename = static::$FIXTURE_PATH . 'file_with_content';
 
         $file = new File($filename);
         $file->write($providedContent);
@@ -360,7 +373,7 @@ class FileTest extends TestCase
      */
     public function testAppendWrite($providedContent, $extraContent)
     {
-        $filename = static::FIXTURE_PATH . 'file_with_content';
+        $filename = static::$FIXTURE_PATH . 'file_with_content';
 
         $file = new File($filename);
         $file->write($providedContent);
@@ -400,7 +413,7 @@ class FileTest extends TestCase
      * Provide real files useful for test scenarios
      * @return array
      */
-    public function provideRealFiles(): array
+    public function provideRealFiles()
     {
         return [
             [__FILE__]
@@ -411,7 +424,7 @@ class FileTest extends TestCase
      * Provide fake files useful for test scenarios
      * @return array
      */
-    public function provideFakeFiles(): array
+    public function provideFakeFiles()
     {
         return [
             [__DIR__ . DIRECTORY_SEPARATOR . 'foo.bar'],
@@ -423,10 +436,10 @@ class FileTest extends TestCase
      * Provide unreadable file
      * @return array
      */
-    public function provideUnreadableFiles(): array
+    public function provideUnreadableFiles()
     {
         return [
-            [static::FIXTURE_PATH . 'unreadable.file']
+            [static::$FIXTURE_PATH . 'unreadable.file']
         ];
     }
 
@@ -434,10 +447,10 @@ class FileTest extends TestCase
      * Provide file that cannot be written
      * @return array
      */
-    public function provideUnwritableFiles(): array
+    public function provideUnwritableFiles()
     {
         return [
-            [static::FIXTURE_PATH . 'unwritable.file']
+            [static::$FIXTURE_PATH . 'unwritable.file']
         ];
     }
 
@@ -445,7 +458,7 @@ class FileTest extends TestCase
      * Provide Content
      * @return array
      */
-    public function provideContent(): array
+    public function provideContent()
     {
         return [
             [new Content('foo')],
@@ -458,7 +471,7 @@ class FileTest extends TestCase
     /**
      * @return array
      */
-    public function provideContentChunks(): array
+    public function provideContentChunks()
     {
         return [
             [new Content('foo'), "bar"],
@@ -471,10 +484,10 @@ class FileTest extends TestCase
      * Provide a filename and a content
      * @return array
      */
-    public function provideFileAndContent(): array
+    public function provideFileAndContent()
     {
         return [
-            [static::FIXTURE_PATH . 'content.file', 'Lorem ipsum']
+            [static::$FIXTURE_PATH . 'content.file', 'Lorem ipsum']
         ];
     }
 
@@ -482,7 +495,7 @@ class FileTest extends TestCase
      * Provide a writable file and also a writable path
      * @return array
      */
-    public function provideWritableFiles(): array
+    public function provideWritableFiles()
     {
         return [
             [__FILE__],
@@ -494,7 +507,7 @@ class FileTest extends TestCase
      * Provide filenames and their expected extensions
      * @return array
      */
-    public function provideFileAndExtension(): array
+    public function provideFileAndExtension()
     {
         return [
             [__FILE__, 'php'],
@@ -507,7 +520,7 @@ class FileTest extends TestCase
     /**
      * @return array
      */
-    public function provideFilesWithExtension(): array
+    public function provideFilesWithExtension()
     {
         return [
             [__FILE__],
@@ -519,7 +532,7 @@ class FileTest extends TestCase
     /**
      * @return array
      */
-    public function provideFilesWithoutExtension(): array
+    public function provideFilesWithoutExtension()
     {
         return [
             [pathinfo(__FILE__, PATHINFO_FILENAME)],
@@ -531,7 +544,7 @@ class FileTest extends TestCase
      * Provide filenames and their expected extensions
      * @return array
      */
-    public function provideFileAnExpectedNames(): array
+    public function provideFileAnExpectedNames()
     {
         return [
             [__FILE__, pathinfo(__FILE__, PATHINFO_FILENAME)],
@@ -545,7 +558,7 @@ class FileTest extends TestCase
      * Provide filenames and their expected extensions
      * @return array
      */
-    public function provideFileAnExpectedBasenames(): array
+    public function provideFileAnExpectedBasenames()
     {
         return [
             [__FILE__, pathinfo(__FILE__, PATHINFO_BASENAME)],
@@ -560,7 +573,7 @@ class FileTest extends TestCase
      * Provide scenarios that will fail to create the file
      * @return array
      */
-    public function provideExceptionalCreationScenario(): array
+    public function provideExceptionalCreationScenario()
     {
         return [
             [__DIR__],

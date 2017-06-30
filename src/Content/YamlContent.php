@@ -24,7 +24,7 @@ class YamlContent extends Content implements ContentInterface
      * @return array
      * @throws \NeedleProject\FileIo\Exception\ContentException
      */
-    public function getArray(): array
+    public function getArray()
     {
         try {
             return Yaml::parse($this->get(), true);

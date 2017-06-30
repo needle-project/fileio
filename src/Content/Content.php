@@ -27,7 +27,7 @@ class Content implements ContentInterface
      *
      * @param string $content
      */
-    public function __construct(string $content)
+    public function __construct($content)
     {
         $this->content = $content;
     }
@@ -35,7 +35,7 @@ class Content implements ContentInterface
     /**
      * @return string
      */
-    public function get(): string
+    public function get()
     {
         return $this->content;
     }
@@ -46,7 +46,7 @@ class Content implements ContentInterface
      * @return array
      * @throws \NeedleProject\FileIo\Exception\ContentException
      */
-    public function getArray(): array
+    public function getArray()
     {
         return [$this->content];
     }

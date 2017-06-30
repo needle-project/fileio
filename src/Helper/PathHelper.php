@@ -30,7 +30,7 @@ class PathHelper
      * @param string $path
      * @return string
      */
-    public function normalizePathSeparator(string $path): string
+    public function normalizePathSeparator($path)
     {
         $path = preg_replace('#(\\\|\/)#', DIRECTORY_SEPARATOR, $path);
         return preg_replace('#' . DIRECTORY_SEPARATOR . '{2,}#', DIRECTORY_SEPARATOR, $path);
@@ -44,7 +44,7 @@ class PathHelper
      * @param string $filePath
      * @return string
      */
-    public function extractFilenameFromPath(string $filePath): string
+    public function extractFilenameFromPath($filePath)
     {
         $fileParts = explode(DIRECTORY_SEPARATOR, $filePath);
         return array_pop($fileParts);
@@ -60,7 +60,7 @@ class PathHelper
      * @param string $filename
      * @return array
      */
-    public function splitFilename(string $filename): array
+    public function splitFilename($filename)
     {
         $extension = '';
         $name = $filename;

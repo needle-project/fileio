@@ -1,7 +1,7 @@
 <?php
 namespace NeedleProject\FileIo\Helper;
 
-use PHPUnit\Framework\TestCase;
+use PHPUnit_Framework_TestCase as TestCase;
 
 class PathHelperTest extends TestCase
 {
@@ -63,7 +63,7 @@ class PathHelperTest extends TestCase
      * Provide scenarios for path normalizer
      * @return array
      */
-    public function providePathsToNormalize(): array
+    public function providePathsToNormalize()
     {
         return [
             ['/foo\\bar', DIRECTORY_SEPARATOR . 'foo' . DIRECTORY_SEPARATOR . 'bar'],
@@ -78,7 +78,7 @@ class PathHelperTest extends TestCase
      * Provide paths from whom to extract file-names
      * @return array
      */
-    public function providePathsForFiles(): array
+    public function providePathsForFiles()
     {
         return [
             ['foo' . DIRECTORY_SEPARATOR . 'bar', 'bar'],
@@ -92,7 +92,7 @@ class PathHelperTest extends TestCase
      * Provide file-names and their split form in name and extension
      * @return array
      */
-    public function provideSplitFilenameScenarios(): array
+    public function provideSplitFilenameScenarios()
     {
         return [
             ['foo.bar', 'foo', 'bar'],

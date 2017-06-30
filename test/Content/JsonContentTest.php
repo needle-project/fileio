@@ -1,7 +1,7 @@
 <?php
 namespace NeedleProject\FileIo\Content;
 
-use PHPUnit\Framework\TestCase;
+use PHPUnit_Framework_TestCase as TestCase;
 
 class JsonContentTest extends TestCase
 {
@@ -47,7 +47,7 @@ class JsonContentTest extends TestCase
     /**
      * @return array
      */
-    public function providePassContent(): array
+    public function providePassContent()
     {
         $returnList = [];
         // scenario 1
@@ -59,7 +59,7 @@ class JsonContentTest extends TestCase
         return $returnList;
     }
 
-    public function provideInvalidJson(): array
+    public function provideInvalidJson()
     {
         return [
             // JSON_ERROR_SYNTAX

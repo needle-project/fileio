@@ -1,7 +1,7 @@
 <?php
 namespace NeedleProject\FileIo\Content;
 
-use PHPUnit\Framework\TestCase;
+use PHPUnit_Framework_TestCase as TestCase;
 
 class YamlContentTest extends TestCase
 {
@@ -34,7 +34,7 @@ class YamlContentTest extends TestCase
     /**
      * @return array
      */
-    public function providePassContent(): array
+    public function providePassContent()
     {
         $returnList = [];
         // scenario 1
@@ -45,7 +45,7 @@ class YamlContentTest extends TestCase
         return $returnList;
     }
 
-    public function provideInvalidYaml(): array
+    public function provideInvalidYaml()
     {
         return [
             [
